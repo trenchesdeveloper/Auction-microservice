@@ -9,11 +9,15 @@ async function createAuction(event, context) {
   const body = event.body;
   const { title } = body;
 
+  const endDate = new Date();
+  endDate.setHours(endDate.getHours() + 1);
+
   const auction = {
     id: uuid(),
     title,
     status: "OPEN",
     createdAt: new Date().toISOString(),
+    endingAt: endDate.toISOString(),
     highestBid: {
       amount: 0,
     }
