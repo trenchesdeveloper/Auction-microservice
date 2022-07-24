@@ -1,10 +1,15 @@
 import { v4 as uuid } from "uuid";
 import AWS from "aws-sdk";
+import middy from "@middy/core";
+import httpJsonBodyParser from "@middy/http-json-body-parser";
+import httpErrorHandler from "@middy/http-error-handler";
+import httpEventNormalizer from "@middy/http-event-normalizer";
+import creatError from "http-errors";
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 async function createAuction(event, context) {
-  const body = JSON.parse(event.body);
+  const body = event.body;
   const { title } = body;
 
   const auction = {
@@ -14,12 +19,17 @@ async function createAuction(event, context) {
     createdAt: new Date().toISOString(),
   };
 
-  await dynamodb
-    .put({
-      TableName: process.env.AUCTIONS_TABLE_NAME,
-      Item: auction,
-    })
-    .promise();
+  try {
+    await dynamodb
+      .put({
+        TableName: process.env.AUCTIONS_TABLE_NAME,
+        Item: auction,
+      })
+      .promise();
+  } catch (error) {
+    console.log(error);
+    throw new creatError.InternalServerError(error);
+  }
 
   return {
     statusCode: 201,
@@ -27,4 +37,7 @@ async function createAuction(event, context) {
   };
 }
 
-export const handler = createAuction;
+export const handler = middy(createAuction)
+  .use(httpJsonBodyParser())
+  .use(httpErrorHandler())
+  .use(httpEventNormalizer());
