@@ -3,12 +3,11 @@ import httpJsonBodyParser from "@middy/http-json-body-parser";
 import httpErrorHandler from "@middy/http-error-handler";
 import httpEventNormalizer from "@middy/http-event-normalizer";
 
-
-export default handler => middy(handler)
-    .use([
-        httpJsonBodyParser(),
-        httpErrorHandler(),
-        httpEventNormalizer(),
-    ])
+export default (handler) =>
+  middy(handler).use([
+    httpJsonBodyParser(),
+    httpErrorHandler(),
+    httpEventNormalizer(),
+  ]);
 
 //# sourceMappingURL=commonMiddleware.js.map

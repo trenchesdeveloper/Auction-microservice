@@ -14,6 +14,9 @@ async function createAuction(event, context) {
     title,
     status: "OPEN",
     createdAt: new Date().toISOString(),
+    highestBid: {
+      amount: 0,
+    }
   };
 
   try {
@@ -34,5 +37,4 @@ async function createAuction(event, context) {
   };
 }
 
-export const handler = commonMiddleware(createAuction)
-
+export const handler = commonMiddleware(createAuction);
